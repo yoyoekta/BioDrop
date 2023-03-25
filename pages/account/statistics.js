@@ -11,19 +11,17 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import logger from "../../config/logger";
-import Alert from "../../components/Alert";
-import Page from "../../components/Page";
-import PageHead from "../../components/PageHead";
-import { abbreviateNumber } from "../../services/utils/abbreviateNumbers";
-import BasicCards from "../../components/statistics/BasicCards";
+import { getUserApi } from "../api/users/[username]";
+import logger from "@config/logger";
+import Alert from "@components/Alert";
+import Page from "@components/Page";
+import PageHead from "@components/PageHead";
+import { abbreviateNumber } from "@services/utils/abbreviateNumbers";
+import BasicCards from "@components/statistics/BasicCards";
 
 export async function getServerSideProps(context) {
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
+  const { req, res } = context;
+  const session = await unstable_getServerSession(req, res, authOptions);
 
   if (!session) {
     return {
@@ -34,18 +32,13 @@ export async function getServerSideProps(context) {
     };
   }
   const username = session.username;
-
-  let profile = {};
-  try {
-    const resUser = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${username}`
+  const { status, profile } = await getUserApi(req, res, username);
+  if (status !== 200) {
+    logger.error(
+      profile.error,
+      `profile loading failed for username: ${username}`
     );
-    profile = await resUser.json();
-  } catch (e) {
-    logger.error(e, `profile loading failed for username: ${username}`);
-  }
 
-  if (!profile.username) {
     return {
       redirect: {
         destination: "/account/no-profile",
@@ -139,8 +132,8 @@ export default function Statistics({ data, profile }) {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
-                <Bar dataKey="views" fill="#82ca9d" />
                 <Tooltip />
+                <Bar dataKey="views" fill="#82ca9d" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -167,7 +160,7 @@ export default function Statistics({ data, profile }) {
             {data.links &&
               data.links.individual.map((link) => (
                 <tr key={link.url}>
-                  <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                  <td className="md:whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                     {link.url}
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">

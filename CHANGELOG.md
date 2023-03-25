@@ -1,9 +1,9 @@
-# 1.89.0 (2023-02-19)
+## 1.102.7 (2023-03-25)
 
 
-### Features
+### Bug Fixes
 
-* remove bounce effect on QR codes ([#4835](https://github.com/EddieHubCommunity/LinkFree/issues/4835)) ([52be532](https://github.com/EddieHubCommunity/LinkFree/commit/52be532470acbe022fbcfe2c9a785f9e4da2b066))
+* nav links state not persisted with deep links ([#5197](https://github.com/EddieHubCommunity/LinkFree/issues/5197)) ([7894ee3](https://github.com/EddieHubCommunity/LinkFree/commit/7894ee335b519d67a1872730e905536379897adf))
 
 
 
